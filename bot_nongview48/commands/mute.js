@@ -5,19 +5,6 @@ const async = require('async');
 const moment = require('moment');
 
 /* Function */
-function Random_Message(db_table, cb = null) {
-    if (!db_table) { 
-        if(cb != null) { return cb(); };
-    };
-
-    let arr = global.lowsession.get(db_table).value();
-    let random = arr[_.random(arr.length-1)];
-
-    if(cb != null) {
-        return cb(random);
-    }
-}
-
 function Process(channels, mentions, args, cb = null) {
     // We created table for contain processed data
     let Data = {
@@ -138,7 +125,7 @@ module.exports = {
     description: 'ใบ้จ้า',
     execute(client, message, args) {
         if (!message.member.roles.find(role => role.name === 'Admin') && !message.member.roles.find(role => role.name === 'Developer') && !message.member.roles.find(role => role.name === 'Moderator')) { 
-            Random_Message("nopermission_message", (randomed_msg) => {
+            global.Random_Message("nopermission_message", (randomed_msg) => {
                 if(randomed_msg) { message.reply(randomed_msg); };
             });
 
@@ -176,7 +163,7 @@ module.exports = {
             let attachments = message.attachments.array();
             
             if(args.length <= 0 && attachments.length <= 0) {
-                Random_Message("mute_message", (randomed_msg) => {
+                global.Random_Message("mute_message", (randomed_msg) => {
                     if(randomed_msg) { Data.Message = randomed_msg };
 
                     Performing_Mute(Data, client, message);
