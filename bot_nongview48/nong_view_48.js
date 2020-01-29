@@ -1,6 +1,8 @@
 /* Dependencies */
 const fs = require('fs');
 const low = require('lowdb');
+const async = require('async');
+const moment = require('moment');
 const Discord = require('discord.js');
 
 /* Client */
@@ -10,7 +12,7 @@ const client = new Discord.Client();
 const { logInfo, logOk, logWarn, logError } = require('./helpers/logger');
 
 /* Variable */
-const { prefix, token } = require("./config.json");
+const { prefix, token, xforce_guild_id } = require("./config.json");
 
 /* Commands Loader */
 client.commands = new Discord.Collection();
@@ -30,15 +32,69 @@ const adapter = new FileSync('db.json')
 const db = low(adapter);
 db.defaults({ 
     nopermission_message: [], 
-    mute_message: [] 
+    mute_message: [],
+    muted: []
 }).write();
 
 /* Globals */
 global.lowsession = db;
+global.xforce_guild = null;
+global.default_mute_role = "433462069702950923"
+global.moderator_mute_role = "478921501442179092"
+
+/* Function */
 
 /* Event */
 client.on('ready', () => {
     logOk(`Logged in as ${client.user.tag}!`, 'Discord');
+    global.xforce_guild = client.guilds.get(xforce_guild_id);
+
+    client.setInterval(() => {
+        let Muted_Data = db.get('muted').value()
+        let now = moment();
+
+        async.each(Muted_Data, function(data, callback) {
+            let expired = moment(data.expired);
+            let diff = now.diff(moment(expired));
+
+            if(diff < 0) {
+                return callback();
+            }
+
+            let user_id = data.id;
+            let user_isModerator = data.isModerator;
+            let user_data = global.xforce_guild.members.get(user_id);
+            
+            if(user_isModerator) {
+                let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้หัวแดง')
+                
+                if(Muted_Role) {
+                    user_data.removeRole(global.moderator_mute_role);
+
+                    async.each(data.channels, function(channel, cb) {
+                        client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.moderator_mute_role + ">");
+
+                        cb();
+                    });
+                }
+            } else {
+                let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้แดก')
+
+                if(Muted_Role) {
+                    user_data.removeRole(global.default_mute_role);
+
+                    async.each(data.channels, function(channel, cb) {
+                        client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.default_mute_role + ">");
+
+                        cb();
+                    });
+                }
+            }
+
+            db.get('muted').remove({ id: user_id }).write()
+            callback();
+        });
+    }, 1000)
 });
 
 client.on('message', message => {
@@ -53,7 +109,7 @@ client.on('message', message => {
     if (!client.commands.has(command)) { return; }
 
     try {
-        client.commands.get(command).execute(client, message, args, db);
+        client.commands.get(command).execute(client, message, args);
     } catch (error) {
         logError(error, 'CommandHandler');
         message.reply('เออเร่อ... ติดต่อน้องโม่ยให้หน่อยยยย');
