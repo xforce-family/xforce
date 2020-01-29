@@ -1,9 +1,8 @@
-/* Helpers */
+/* Dependencies */
 const ms = require('ms');
 const _ = require('lodash');
 const async = require('async');
 const moment = require('moment');
-const { logInfo, logOk, logWarn, logError } = require('../helpers/logger');
 
 /* Function */
 function Random_Message(db_table, cb = null) {
@@ -175,8 +174,7 @@ module.exports = {
             //Final one is args. We'll see if args is empty, Means we'll random some mute message. If not, we'll take it as custom message.
             //We forgot one thing. Image. So we'll see if message has an image. we'll take it as custom message too.
             let attachments = message.attachments.array();
-
-            console.log(args.length <= 0 && attachments.length <= 0);
+            
             if(args.length <= 0 && attachments.length <= 0) {
                 Random_Message("mute_message", (randomed_msg) => {
                     if(randomed_msg) { Data.Message = randomed_msg };
