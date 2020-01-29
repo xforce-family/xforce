@@ -49,7 +49,7 @@ module.exports = {
         let attachments = message.attachments.array();
         
         //If channel is not mentioned. We assume current channel as a channel.
-        if (channel.length <= 0) {
+        if (channels.length <= 0) {
             channels = [];
             channels.push(message.channel);
         }
