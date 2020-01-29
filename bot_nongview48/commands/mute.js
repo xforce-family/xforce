@@ -114,7 +114,19 @@ function Performing_Mute(data, client, message) {
 
         async.each(Channels, function(channel, callback) {
             client.channels.get(channel).send(announce_message).then(msg => {
-                msg.channel.send(Message);
+                if(data.Attachments.length > 0) {
+                    if(Message == "") {
+                        msg.channel.send({
+                            files: data.Attachments
+                        })
+                    } else {
+                        msg.channel.send(Message, {
+                            files: data.Attachments
+                        })
+                    }
+                } else {
+                    msg.channel.send(Message);
+                }
             })
 
             callback();
@@ -161,16 +173,35 @@ module.exports = {
             delete duration;
 
             //Final one is args. We'll see if args is empty, Means we'll random some mute message. If not, we'll take it as custom message.
-            if(args.length <= 0) {
+            //We forgot one thing. Image. So we'll see if message has an image. we'll take it as custom message too.
+            let attachments = message.attachments.array();
+
+            console.log(args.length <= 0 && attachments.length <= 0);
+            if(args.length <= 0 && attachments.length <= 0) {
                 Random_Message("mute_message", (randomed_msg) => {
                     if(randomed_msg) { Data.Message = randomed_msg };
 
                     Performing_Mute(Data, client, message);
                 });    
             } else {
-                Data.Message = args.join(' ');
+                let attachment_array = [];
 
-                Performing_Mute(Data, client, message);
+                async.each(attachments, function(attachment, callback) {
+                    attachment_array.push(attachment.url);
+
+                    callback();
+                }, function(err) {
+                    Data.Attachments = attachment_array;
+
+                    if (args.length <= 0) {
+                        Data.Message = "";
+                    } else {
+                        Data.Message = args.join(' ');
+                    }
+
+                    Performing_Mute(Data, client, message);
+                    delete attachment_array;
+                })
             }
         });
     }
