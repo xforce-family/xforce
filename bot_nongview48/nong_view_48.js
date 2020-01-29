@@ -1,5 +1,6 @@
 /* Dependencies */
 const fs = require('fs');
+const _ = require('lodash');
 const low = require('lowdb');
 const async = require('async');
 const moment = require('moment');
@@ -41,6 +42,18 @@ global.lowsession = db;
 global.xforce_guild = null;
 global.default_mute_role = "433462069702950923"
 global.moderator_mute_role = "478921501442179092"
+global.Random_Message = function(db_table, cb = null) {
+    if (!db_table) { 
+        if(cb != null) { return cb(); };
+    };
+
+    let arr = global.lowsession.get(db_table).value();
+    let random = arr[_.random(arr.length-1)];
+
+    if(cb != null) {
+        return cb(random);
+    }
+}
 
 /* Function */
 
