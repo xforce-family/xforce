@@ -146,8 +146,10 @@ module.exports = {
         let mentions = message.mentions.users.array();
 
         //If channel is not mentioned. We assume current channel as a channel.
-        channels = [];
-        channels.push(message.channel);
+        if (channel.length <= 0) {
+            channels = [];
+            channels.push(message.channel);
+        }
 
         // Then process the data
         Process(channels, mentions, args, (Data) => {

@@ -47,10 +47,12 @@ module.exports = {
         // Map all data that need to process
         let channels = message.mentions.channels.array();
         let attachments = message.attachments.array();
-
+        
         //If channel is not mentioned. We assume current channel as a channel.
-        channels = [];
-        channels.push(message.channel);
+        if (channel.length <= 0) {
+            channels = [];
+            channels.push(message.channel);
+        }
 
         let Data = {
             Channels: [],
@@ -62,7 +64,6 @@ module.exports = {
 
             callback();
         }, function(err) {
-
             async.each(channels, function(channel, callback) {
                 let channel_id = channel.id;
                 
