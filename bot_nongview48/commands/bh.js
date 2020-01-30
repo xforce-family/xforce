@@ -84,11 +84,11 @@ function Performing_Blackhole(data, client, message) {
                 if(Message.attachments.length > 0) {
                     if(Message.length == 0) {
                         msg.channel.send({
-                            files: data.Attachments
+                            files: Data.Message.attachments
                         })
                     } else {
                         msg.channel.send(Message.text, {
-                            files: data.Attachments
+                            files: Data.Message.attachments
                         })
                     }
                 } else {
