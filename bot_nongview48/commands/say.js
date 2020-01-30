@@ -30,29 +30,8 @@ function Say(Data, client, message) {
 module.exports = {
     name: 'say',
     description: '',
+    permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
-        if (!message.member.roles.find(role => role.name === 'Admin') && !message.member.roles.find(role => role.name === 'Developer') && !message.member.roles.find(role => role.name === 'Moderator')) { 
-            global.Random_Message("nopermission_message", (randomed_msg) => {
-                if(randomed_msg) { 
-                    if (randomed_msg.attachments.length > 0) {
-                        if(randomed_msg.message.length == 0) {
-                            message.reply({
-                                files: randomed_msg.attachments
-                            })
-                        } else {
-                            message.reply(randomed_msg.message, {
-                                files: randomed_msg.attachments
-                            })
-                        }
-                    } else {
-                        message.reply(randomed_msg.message);
-                    }
-                };
-            });
-
-            return;
-        }
-
         /* Exclude some data that not need to process */
         args.shift();
 

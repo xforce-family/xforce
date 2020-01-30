@@ -56,6 +56,38 @@ global.Random_Message = function(db_table, cb = null) {
 }
 
 /* Function */
+function checkPermission(message, permit, cb) {
+    if (permit.length == 0) {
+        return cb(true);
+    }
+
+    if(message.member.roles.some(r=>permit.includes(r.name)) ) {
+        return cb(true);
+    } else {
+        return cb(false);
+    }
+}
+
+function SendRandomNoPermissionMessage(message) {
+    global.Random_Message("nopermission_message", (randomed_msg) => {
+        if(randomed_msg) { 
+            if (randomed_msg.attachments.length > 0) {
+                if(randomed_msg.message.length == 0) {
+                    message.reply({
+                        files: randomed_msg.attachments
+                    })
+                } else {
+                    message.reply(randomed_msg.text, {
+                        files: randomed_msg.attachments
+                    })
+                }
+            } else {
+                message.reply(randomed_msg.text);
+            }
+        };
+    });
+}
+
 
 /* Event */
 client.on('ready', () => {
@@ -122,7 +154,15 @@ client.on('message', message => {
     if (!client.commands.has(command)) { return; }
 
     try {
-        client.commands.get(command).execute(client, message, args);
+        let command_data = client.commands.get(command)
+
+        checkPermission(message, command_data.permit, (allow) => {
+            if(allow) {
+                client.commands.get(command).execute(client, message, args);
+            } else {
+                SendRandomNoPermissionMessage(message);
+            }
+        })
     } catch (error) {
         logError(error, 'CommandHandler');
         message.reply('เออเร่อ... ติดต่อน้องโม่ยให้หน่อยยยย');

@@ -123,29 +123,8 @@ function Performing_Mute(data, client, message) {
 module.exports = {
     name: 'mute',
     description: 'ใบ้จ้า',
+    permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
-        if (!message.member.roles.find(role => role.name === 'Admin') && !message.member.roles.find(role => role.name === 'Developer') && !message.member.roles.find(role => role.name === 'Moderator')) { 
-            global.Random_Message("nopermission_message", (randomed_msg) => {
-                if(randomed_msg) { 
-                    if (randomed_msg.attachments.length > 0) {
-                        if(randomed_msg.message.length == 0) {
-                            message.reply({
-                                files: randomed_msg.attachments
-                            })
-                        } else {
-                            message.reply(randomed_msg.message, {
-                                files: randomed_msg.attachments
-                            })
-                        }
-                    } else {
-                        message.reply(randomed_msg.message);
-                    }
-                };
-            });
-
-            return;
-        }
-
         /* Map some data that not need to process */
         let duration = args[1];
 
