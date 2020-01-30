@@ -34,14 +34,17 @@ const db = low(adapter);
 db.defaults({ 
     nopermission_message: [], 
     mute_message: [],
-    muted: []
+    default_message: [],
+    muted: [],
+    interactive: false
 }).write();
 
 /* Globals */
 global.lowsession = db;
 global.xforce_guild = null;
-global.default_mute_role = "433462069702950923"
-global.moderator_mute_role = "478921501442179092"
+global.default_mute_role = "433462069702950923";
+global.moderator_mute_role = "478921501442179092";
+global.interactive = false;
 global.Random_Message = function(db_table, cb = null) {
     if (!db_table) { 
         if(cb != null) { return cb(); };
@@ -72,7 +75,7 @@ function SendRandomNoPermissionMessage(message) {
     global.Random_Message("nopermission_message", (randomed_msg) => {
         if(randomed_msg) { 
             if (randomed_msg.attachments.length > 0) {
-                if(randomed_msg.message.length == 0) {
+                if(randomed_msg.text.length == 0) {
                     message.reply({
                         files: randomed_msg.attachments
                     })
@@ -93,6 +96,7 @@ function SendRandomNoPermissionMessage(message) {
 client.on('ready', () => {
     logOk(`Logged in as ${client.user.tag}!`, 'Discord');
     global.xforce_guild = client.guilds.get(xforce_guild_id);
+    global.interactive = db.get('interactive').value();
 
     client.setInterval(() => {
         let Muted_Data = db.get('muted').value()
@@ -143,11 +147,32 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) { return; }
+    if (message.author.bot) { return };
     if (message.author.id !== "405397046691102740") { return; } // NOTE : REMOVE THIS WHEN PRODUCTION
+    if (!message.content.startsWith(prefix)) {
+        if(global.interactive) {
+            let db_get = global.lowsession.get("default_message").find({ question_text: message.content }).value();
+            if(db_get) {
+                if (db_get.answer_attachments.length > 0) {
+                    if(db_get.answer_text.length == 0) {
+                        message.channel.send({
+                            files: db_get.answer_attachments
+                        })
+                    } else {
+                        message.channel.send(db_get.answer_text, {
+                            files: db_get.answer_attachments
+                        })
+                    }
+                } else {
+                    message.channel.send(db_get.answer_text);
+                }
+            }
+        }
+
+        return;
+    }
 
     const args = message.content.slice(prefix.length).split(/ +/);
-    
     args.shift()
     const command = args[0].toLowerCase();
 

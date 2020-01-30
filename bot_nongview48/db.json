@@ -2,7 +2,9 @@
   "nopermission_message": [
     {
       "text": "แหะๆ",
-      "attachments": []
+      "attachments": [
+        "https://cdn.discordapp.com/attachments/407977961401221121/672316317767827456/40694619_2075907875791406_6347696427782635520_n.png"
+      ]
     }
   ],
   "mute_message": [
@@ -11,5 +13,7 @@
       "attachments": []
     }
   ],
-  "muted": []
+  "muted": [],
+  "default_message": [],
+  "interactive": true
 }
