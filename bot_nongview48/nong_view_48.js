@@ -35,6 +35,7 @@ db.defaults({
     nopermission_message: [], 
     mute_message: [],
     default_message: [],
+    help_message: [],
     muted: [],
     interactive: false
 }).write();

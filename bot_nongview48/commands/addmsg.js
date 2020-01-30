@@ -25,6 +25,8 @@ module.exports = {
             dbtable = "nopermission_message"
         } else if(message_type == "mute") {
             dbtable = "mute_message"
+        } else if(message_type == "help") {
+            dbtable = "help_message"
         } else {
             return message.reply("ไม่เจอข้อความ Type นี้")
         }

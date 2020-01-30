@@ -15,5 +15,11 @@
   ],
   "muted": [],
   "default_message": [],
-  "interactive": true
+  "interactive": true,
+  "help_message": [
+    {
+      "text": "หลาว หลาว หลาว",
+      "attachments": []
+    }
+  ]
 }
