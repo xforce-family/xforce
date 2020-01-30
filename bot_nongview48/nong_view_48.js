@@ -36,7 +36,9 @@ db.defaults({
     mute_message: [],
     default_message: [],
     help_message: [],
+    blackhole_message: [],
     muted: [],
+    blackholed: [],
     interactive: false
 }).write();
 
@@ -45,6 +47,7 @@ global.lowsession = db;
 global.xforce_guild = null;
 global.default_mute_role = "433462069702950923";
 global.moderator_mute_role = "478921501442179092";
+global.blackhole_role = "484712818805833728";
 global.interactive = false;
 global.Random_Message = function(db_table, cb = null) {
     if (!db_table) { 
@@ -100,6 +103,7 @@ client.on('ready', () => {
     global.interactive = db.get('interactive').value();
 
     client.setInterval(() => {
+        let blackholed_data = db.get('blackholed').value()
         let Muted_Data = db.get('muted').value()
         let now = moment();
 
@@ -144,6 +148,33 @@ client.on('ready', () => {
             db.get('muted').remove({ id: user_id }).write()
             callback();
         });
+
+        async.each(blackholed_data, function(data, callback) {
+            let expired = moment(data.expired);
+            let diff = now.diff(moment(expired));
+
+            if(diff < 0) {
+                return callback();
+            }
+
+            let user_id = data.id;
+            let user_data = global.xforce_guild.members.get(user_id);
+            let Blackholed_Role = !!user_data.roles.find(role => role.name === 'Black Hole')
+            
+            if(Blackholed_Role) {
+                user_data.removeRole(global.blackhole_role);
+
+                async.each(data.channels, function(channel, cb) {
+                    client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.blackhole_role + ">");
+
+                    cb();
+                });
+            }
+
+            db.get('blackholed').remove({ id: user_id }).write()
+            callback();
+        });
+
     }, 1000)
 });
 

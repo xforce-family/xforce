@@ -1,3 +1,5 @@
+/* This is copy & pased from mute.js */
+
 /* Dependencies */
 const ms = require('ms');
 const _ = require('lodash');
@@ -28,11 +30,9 @@ function Process(channels, mentions, args, cb = null) {
         // Next, We gonna process the client data
         async.each(mentions, function(mention, callback) {
             let member_id = mention.id;
-            let member_data = global.xforce_guild.members.get(member_id);
-            let Moderator = !!member_data.roles.find(role => role.name === 'Moderator')
 
             //Push the info into list that we will mute
-            Data.Users.push({id: member_id, isModerator: Moderator});
+            Data.Users.push({id: member_id});
 
             //And Exclude it
             _.pull(args, "<@!" + member_id + ">");
@@ -47,53 +47,34 @@ function Process(channels, mentions, args, cb = null) {
     });
 }
 
-function Performing_Mute(data, client, message) {
+function Performing_Blackhole(data, client, message) {
     let Users = data.Users;
     let Channels = data.Channels;
     let Message = data.Message;
     let Converted_Duration = ms(data.Duration);
 
-    let Summary_Array = {
-        Normal: [],
-        Moderator: []
-    };
+    let Summary_Array = [];
 
     async.each(Users, function(user, callback) {
-        let db_get = global.lowsession.get('muted').find({ id: user.id }).value();
+        let db_get = global.lowsession.get('blackholed').find({ id: user.id }).value();
 
         if(!db_get) {
             let user_data = global.xforce_guild.members.get(user.id);
-
-            if(user.isModerator) {
-                user_data.addRole(global.moderator_mute_role);
-
-                Summary_Array.Moderator.push("<@" + user.id + ">");
-            } else {
-                user_data.addRole(global.default_mute_role);
-
-                Summary_Array.Normal.push("<@" + user.id + ">");
-            }
+            user_data.addRole(global.blackhole_role);
+            Summary_Array.push("<@" + user.id + ">");
 
             user.expired = moment().add(Converted_Duration, 'milliseconds');
             user.channels = Channels;
-            global.lowsession.get('muted').push(user).write();
+            global.lowsession.get('blackholed').push(user).write();
         }
 
         callback();
     }, function(err) {
-        if (Summary_Array.Normal.length <= 0 && Summary_Array.Moderator.length <= 0) { return };
+        if (Summary_Array.length <= 0) { return };
 
         let announce_message = "";
-        if (Summary_Array.Normal.length > 0) {
-            announce_message += "Users " + Summary_Array.Normal.join(', ') + " ถูก " + "<@&" + global.default_mute_role + ">";
-        }
-
-        if (Summary_Array.Moderator.length > 0) {
-            if(announce_message !== "") {
-                announce_message += "และ";
-            }
-
-            announce_message += "Users " + Summary_Array.Moderator.join(', ') + " ถูก " + "<@&" + global.moderator_mute_role + ">"
+        if (Summary_Array.length > 0) {
+            announce_message += "Users " + Summary_Array.join(', ') + " ถูก " + "<@&" + global.blackhole_role + ">";
         }
 
         announce_message += " เป็นเวลา " + ms(Converted_Duration, { long: true });
@@ -121,15 +102,15 @@ function Performing_Mute(data, client, message) {
 }
 
 module.exports = {
-    name: 'mute',
-    description: 'ใบ้จ้า',
+    name: 'bh',
+    description: '',
     permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
         /* Map some data that not need to process */
         let duration = args[1];
 
         /* Exclude some data that not need to process */
-        args.shift(); // <- This is "mute" command
+        args.shift(); // <- This is "bh" command
         _.pull(args, duration); // <- This is "duration" data
 
         /* Process Data */
@@ -158,10 +139,10 @@ module.exports = {
             let attachments = message.attachments.array();
             
             if(args.length <= 0 && attachments.length <= 0) {
-                global.Random_Message("mute_message", (randomed_msg) => {
+                global.Random_Message("blackhole_message", (randomed_msg) => {
                     if(randomed_msg) { Data.Message = randomed_msg };
 
-                    Performing_Mute(Data, client, message);
+                    Performing_Blackhole(Data, client, message);
                 });    
             } else {
                 Data.Message = [];
@@ -177,7 +158,7 @@ module.exports = {
                         Data.Message.text = args.join(' ');
                     }
 
-                    Performing_Mute(Data, client, message);
+                    Performing_Blackhole(Data, client, message);
                     delete attachment_array;
                 })
             }

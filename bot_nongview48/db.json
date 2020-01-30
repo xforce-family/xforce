@@ -21,5 +21,12 @@
       "text": "หลาว หลาว หลาว",
       "attachments": []
     }
-  ]
+  ],
+  "blackhole_message": [
+    {
+      "text": "...",
+      "attachments": []
+    }
+  ],
+  "blackholed": []
 }

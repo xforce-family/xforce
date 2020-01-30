@@ -27,6 +27,8 @@ module.exports = {
             dbtable = "mute_message"
         } else if(message_type == "help") {
             dbtable = "help_message"
+        } else if(message_type == "blackhole") {
+            dbtable = "blackhole_message"
         } else {
             return message.reply("ไม่เจอข้อความ Type นี้")
         }
