@@ -101,7 +101,7 @@ function Performing_Mute(data, client, message) {
         async.each(Channels, function(channel, callback) {
             client.channels.get(channel).send(announce_message).then(msg => {
                 if(data.Attachments.length > 0) {
-                    if(Message == "") {
+                    if(Message.length == 0) {
                         msg.channel.send({
                             files: data.Attachments
                         })
@@ -126,7 +126,21 @@ module.exports = {
     execute(client, message, args) {
         if (!message.member.roles.find(role => role.name === 'Admin') && !message.member.roles.find(role => role.name === 'Developer') && !message.member.roles.find(role => role.name === 'Moderator')) { 
             global.Random_Message("nopermission_message", (randomed_msg) => {
-                if(randomed_msg) { message.reply(randomed_msg); };
+                if(randomed_msg) { 
+                    if (randomed_msg.attachments.length > 0) {
+                        if(randomed_msg.message.length == 0) {
+                            message.reply({
+                                files: randomed_msg.attachments
+                            })
+                        } else {
+                            message.reply(randomed_msg.message, {
+                                files: randomed_msg.attachments
+                            })
+                        }
+                    } else {
+                        message.reply(randomed_msg.message);
+                    }
+                };
             });
 
             return;

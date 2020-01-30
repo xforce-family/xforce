@@ -1,9 +1,9 @@
 {
-  "nopermission_message": [
-    "แหะๆ"
-  ],
-  "mute_message": [
-    "<:Mview01:632059483371339796>"
-  ],
-  "muted": []
+	"nopermission_message": [
+		{"text": "แหะๆ", "attachments": []}
+  	],
+  	"mute_message": [
+		{"text": "<:Mview01:632059483371339796>", "attachments": []}
+  	],
+  	"muted": []
 }

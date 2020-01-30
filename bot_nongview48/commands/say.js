@@ -8,7 +8,7 @@ function Say(Data, client, message) {
         let msg_channel = client.channels.get(channel)
         
         if (Data.Attachments.length > 0) {
-            if(Data.Message == 0) {
+            if(Data.Message.length == 0) {
                 msg_channel.send({
                     files: Data.Attachments
                 })
@@ -33,7 +33,21 @@ module.exports = {
     execute(client, message, args) {
         if (!message.member.roles.find(role => role.name === 'Admin') && !message.member.roles.find(role => role.name === 'Developer') && !message.member.roles.find(role => role.name === 'Moderator')) { 
             global.Random_Message("nopermission_message", (randomed_msg) => {
-                if(randomed_msg) { message.reply(randomed_msg); };
+                if(randomed_msg) { 
+                    if (randomed_msg.attachments.length > 0) {
+                        if(randomed_msg.message.length == 0) {
+                            message.reply({
+                                files: randomed_msg.attachments
+                            })
+                        } else {
+                            message.reply(randomed_msg.message, {
+                                files: randomed_msg.attachments
+                            })
+                        }
+                    } else {
+                        message.reply(randomed_msg.message);
+                    }
+                };
             });
 
             return;
