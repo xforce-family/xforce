@@ -45,7 +45,7 @@ module.exports = {
             }
     
             global.lowsession.get(dbtable).push({ text : custom_message, attachments: data_attachments }).write();
-            if(attachments.length > 0) {
+            if(data_attachments.length > 0) {
                 if(custom_message.length == 0) {
                     message.reply("บันทึกรูปลงไปในฐานข้อมูล" + dbtable + "แล้ว", {
                         files: data_attachments

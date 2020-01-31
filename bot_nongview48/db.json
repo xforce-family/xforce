@@ -11,22 +11,30 @@
     {
       "text": "<:Mview01:632059483371339796>",
       "attachments": []
+    },
+    {
+      "text": "https://tenor.com/2RWa.gif",
+      "attachments": []
+    },
+    {
+      "text": "น้องวิวไม่กากนะค้าบ",
+      "attachments": []
+    },
+    {
+      "text": "งอนหรอ ไม่งอนน้า รักค้าบบ",
+      "attachments": []
+    },
+    {
+      "text": "บั้ยบายค่ะพวกเรื้อน",
+      "attachments": [
+        "https://cdn.discordapp.com/attachments/407977961401221121/672703542435381270/image0.gif"
+      ]
     }
   ],
-  "muted": [],
+  "blackholed": [],
   "default_message": [],
-  "interactive": true,
-  "help_message": [
-    {
-      "text": "หลาว หลาว หลาว",
-      "attachments": []
-    }
-  ],
-  "blackhole_message": [
-    {
-      "text": "...",
-      "attachments": []
-    }
-  ],
-  "blackholed": []
+  "help_message": [],
+  "blackhole_message": [],
+  "muted": [],
+  "interactive": false
 }
