@@ -11,7 +11,8 @@ function Process(channels, mentions, args, cb = null) {
     // We created table for contain processed data
     let Data = {
         'Channels': [],
-        'Users': []
+        'Users': [],
+        'Duration': ""
     };
 
     // We're gonna process the channel data first
@@ -40,6 +41,8 @@ function Process(channels, mentions, args, cb = null) {
             // Next
             callback();
         }, function(err) {
+            Data.Duration = args[0];
+          
             if(cb != null) {
                 return cb(Data);
             }
@@ -82,13 +85,13 @@ function Performing_Blackhole(data, client, message) {
         async.each(Channels, function(channel, callback) {
             client.channels.get(channel).send(announce_message).then(msg => {
                 if(Message.attachments.length > 0) {
-                    if(Message.length == 0) {
+                    if(Message.text.length == 0) {
                         msg.channel.send({
-                            files: Data.Message.attachments
+                            files: Message.attachments
                         })
                     } else {
                         msg.channel.send(Message.text, {
-                            files: Data.Message.attachments
+                            files: Message.attachments
                         })
                     }
                 } else {
@@ -106,9 +109,6 @@ module.exports = {
     description: '',
     permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
-        /* Map some data that not need to process */
-        let duration = args[1];
-
         /* Exclude some data that not need to process */
         args.shift(); // <- This is "bh" command
         _.pull(args, duration); // <- This is "duration" data
@@ -127,9 +127,8 @@ module.exports = {
 
         // Then process the data
         Process(channels, mentions, args, (Data) => {
-            //Set more data
-            Data.Duration = duration;
-
+            _.pull(args, Data.Duration); // <- This is "duration" data
+          
             //Free some memory
             delete mentions;
             delete duration;

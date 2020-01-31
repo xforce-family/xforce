@@ -9,7 +9,8 @@ function Process(channels, mentions, args, cb = null) {
     // We created table for contain processed data
     let Data = {
         'Channels': [],
-        'Users': []
+        'Users': [],
+        'Duration': ""
     };
 
     // We're gonna process the channel data first
@@ -40,6 +41,8 @@ function Process(channels, mentions, args, cb = null) {
             // Next
             callback();
         }, function(err) {
+            Data.Duration = args[0];
+            
             if(cb != null) {
                 return cb(Data);
             }
@@ -101,13 +104,13 @@ function Performing_Mute(data, client, message) {
         async.each(Channels, function(channel, callback) {
             client.channels.get(channel).send(announce_message).then(msg => {
                 if(Message.attachments.length > 0) {
-                    if(Message.length == 0) {
+                    if(Message.text.length == 0) {
                         msg.channel.send({
-                            files: Data.Message.attachments
+                            files: Message.attachments
                         })
                     } else {
                         msg.channel.send(Message.text, {
-                            files: Data.Message.attachments
+                            files: Message.attachments
                         })
                     }
                 } else {
@@ -125,12 +128,9 @@ module.exports = {
     description: 'ใบ้จ้า',
     permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
-        /* Map some data that not need to process */
-        let duration = args[1];
 
         /* Exclude some data that not need to process */
         args.shift(); // <- This is "mute" command
-        _.pull(args, duration); // <- This is "duration" data
 
         /* Process Data */
         
@@ -146,9 +146,8 @@ module.exports = {
 
         // Then process the data
         Process(channels, mentions, args, (Data) => {
-            //Set more data
-            Data.Duration = duration;
-
+            _.pull(args, Data.Duration); // <- This is "duration" data
+          
             //Free some memory
             delete mentions;
             delete duration;
@@ -156,7 +155,7 @@ module.exports = {
             //Final one is args. We'll see if args is empty, Means we'll random some mute message. If not, we'll take it as custom message.
             //We forgot one thing. Image. So we'll see if message has an image. we'll take it as custom message too.
             let attachments = message.attachments.array();
-            
+
             if(args.length <= 0 && attachments.length <= 0) {
                 global.Random_Message("mute_message", (randomed_msg) => {
                     if(randomed_msg) { Data.Message = randomed_msg };
