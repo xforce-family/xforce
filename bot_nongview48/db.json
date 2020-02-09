@@ -63,22 +63,10 @@
     {
       "text": "ไหนๆใครจะลงหลุมอีก",
       "attachments": [
-			{
-				"attachment": "https://cdn.discordapp.com/attachments/407977961401221121/672704475663958036/ea70ef998ec66b38.png",
-				"name": "ea70ef998ec66b38.png",
-			}
-		]
-    }
-  ],
-  "muted": [
-    {
-      "id": "378926801453580293",
-      "isModerator": false,
-      "expired": "2020-02-09T17:37:19.991Z",
-      "channels": [
-        "426590356939997185"
+        "https://cdn.discordapp.com/attachments/407977961401221121/672704475663958036/ea70ef998ec66b38.png"
       ]
     }
   ],
+  "muted": [],
   "interactive": true
 }
