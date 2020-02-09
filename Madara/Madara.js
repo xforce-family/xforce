@@ -16,18 +16,18 @@ client.on('ready', () => {
     global.xforce_guild = client.guilds.get(xforce_guild_id);
 });
 
-client.on('MadaraReactionAdd', (reaction, user) => {
-    if(!reaction) { return };
-    if(reaction._emoji.id !== "446705009707450368") { return };
-
+client.on('messageReactionAdd', (reaction, user) => {
     setImmediate(() => {
+        if(!reaction) { return }
+        if(reaction._emoji.id !== "446705009707450368") { return };
+    
+        logInfo("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count, "ReactionAdd");
         if(reaction.count == Bai) {
-            reaction.message.react("446705009707450368");
-            
+            setImmediate(() => {
+                reaction.message.react("446705009707450368");
 
-            logOk("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count + " (Triggered)", "ReactionAdd")
-        } else {
-            logInfo("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count, "ReactionAdd");
+                logOk("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count + " (Triggered)", "ReactionAdd")
+            })
         }
     })
 });
@@ -37,10 +37,12 @@ client.on('MadaraReactionAdd', (reaction, user) => {
     https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/coding-guides/raw-events.md 
 */
 client.on('raw', packet => {
-    if (!['MESSAGE_REACTION_ADD'].includes(packet.t)) return;
-    // Grab the channel to check the message from
     setImmediate(() => {
+        if (!['MESSAGE_REACTION_ADD'].includes(packet.t)) return;
+        // Grab the channel to check the message from
         const channel = client.channels.get(packet.d.channel_id);
+        // There's no need to emit if the message is cached, because the event will fire anyway for that
+        if (channel.messages.has(packet.d.message_id)) return;
         // Since we have confirmed the message is not cached, let's fetch it
         channel.fetchMessage(packet.d.message_id).then(message => {
             // Emojis can have identifiers of name:id format, so we have to account for that case as well
@@ -51,10 +53,10 @@ client.on('raw', packet => {
             if (reaction) reaction.users.set(packet.d.user_id, client.users.get(packet.d.user_id));
             // Check which type of event it is before emitting
             if (packet.t === 'MESSAGE_REACTION_ADD') {
-                client.emit('MadaraReactionAdd', reaction, client.users.get(packet.d.user_id));
+                client.emit('messageReactionAdd', reaction, client.users.get(packet.d.user_id));
             }
         });
-    });
+    })
 });
 
 /* Init */
