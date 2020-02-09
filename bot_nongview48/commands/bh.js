@@ -69,6 +69,8 @@ function Performing_Blackhole(data, client, message) {
             user.expired = moment().add(Converted_Duration, 'milliseconds');
             user.channels = Channels;
             global.lowsession.get('blackholed').push(user).write();
+        } else {
+            global.UnBlackHole(db_get);
         }
 
         callback();
@@ -85,14 +87,20 @@ function Performing_Blackhole(data, client, message) {
         async.each(Channels, function(channel, callback) {
             client.channels.get(channel).send(announce_message).then(msg => {
                 if(Message.attachments.length > 0) {
+                    let attachments_clone = [...Message.attachments];
+
                     if(Message.text.length == 0) {
                         msg.channel.send({
-                            files: Message.attachments
+                            files: attachments_clone
                         })
+
+                        delete attachments_clone;
                     } else {
                         msg.channel.send(Message.text, {
-                            files: Message.attachments
+                            files: attachments_clone
                         })
+
+                        delete attachments_clone;
                     }
                 } else {
                     msg.channel.send(Message.text);
