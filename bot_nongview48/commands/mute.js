@@ -41,7 +41,7 @@ function Process(channels, mentions, args, cb = null) {
             // Next
             callback();
         }, function(err) {
-            Data.Duration = args[0];
+            Data.Duration = args[0] || "5m";
             
             if(cb != null) {
                 return cb(Data);

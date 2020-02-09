@@ -7,7 +7,7 @@ const moment = require('moment');
 const Discord = require('discord.js');
 
 /* Client */
-const client = new Discord.Client();
+const client = new Discord.Client({autoReconnect:true});
 
 /* Helpers */
 const { logInfo, logOk, logWarn, logError } = require('./helpers/logger');
@@ -180,7 +180,6 @@ client.on('ready', () => {
 
 client.on('message', message => {
     if (message.author.bot) { return };
-    if (message.author.id !== "405397046691102740") { return; } // NOTE : REMOVE THIS WHEN PRODUCTION
     if (!message.content.startsWith(prefix)) {
         if(global.interactive) {
             let db_get = global.lowsession.get("default_message").find({ question_text: message.content }).value();

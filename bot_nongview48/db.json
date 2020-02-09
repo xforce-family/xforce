@@ -29,12 +29,56 @@
       "attachments": [
         "https://cdn.discordapp.com/attachments/407977961401221121/672703542435381270/image0.gif"
       ]
+    },
+    {
+      "text": "รุ่น 2 is the best ค่า",
+      "attachments": []
     }
   ],
   "blackholed": [],
-  "default_message": [],
-  "help_message": [],
-  "blackhole_message": [],
-  "muted": [],
-  "interactive": false
+  "default_message": [
+    {
+      "question_text": "องหงิญ",
+      "answer_text": "องหงิญอะไรคะ พอได้แล้วนะกับการบ้ากาม\nลูกเค้ามีวัวมีหัวไก่ มีพ่อมีแม่",
+      "answer_attachments": []
+    },
+    {
+      "question_text": "หอม",
+      "answer_text": "เอาจริงๆ คือขยะแขยงไอพวกนี้อยู่แล้วอะ เม้นรูปคนอื่น หอม ๆ หอมพ่อมึงนู่น",
+      "answer_attachments": []
+    },
+    {
+      "question_text": "บอทนาโนะอยู่ไหน",
+      "answer_text": "รุ่นพี่นาโนะแกรดแล้วค่ะ หนูจะมาทำหน้าที่แทนพี่เค้า",
+      "answer_attachments": []
+    }
+  ],
+  "help_message": [
+    {
+      "text": "หลาว หลาว หลาว",
+      "attachments": []
+    }
+  ],
+  "blackhole_message": [
+    {
+      "text": "ไหนๆใครจะลงหลุมอีก",
+      "attachments": [
+			{
+				"attachment": "https://cdn.discordapp.com/attachments/407977961401221121/672704475663958036/ea70ef998ec66b38.png",
+				"name": "ea70ef998ec66b38.png",
+			}
+		]
+    }
+  ],
+  "muted": [
+    {
+      "id": "378926801453580293",
+      "isModerator": false,
+      "expired": "2020-02-09T17:37:19.991Z",
+      "channels": [
+        "426590356939997185"
+      ]
+    }
+  ],
+  "interactive": true
 }

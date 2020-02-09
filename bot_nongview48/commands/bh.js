@@ -41,7 +41,7 @@ function Process(channels, mentions, args, cb = null) {
             // Next
             callback();
         }, function(err) {
-            Data.Duration = args[0];
+            Data.Duration = args[0] || "5m";
           
             if(cb != null) {
                 return cb(Data);
@@ -109,9 +109,9 @@ module.exports = {
     description: '',
     permit: ['Admin','Developer','Moderator'],
     execute(client, message, args) {
+		
         /* Exclude some data that not need to process */
         args.shift(); // <- This is "bh" command
-        _.pull(args, duration); // <- This is "duration" data
 
         /* Process Data */
         
