@@ -19,11 +19,11 @@ client.on('ready', () => {
 client.on('messageReactionAdd', (reaction, user) => {
     if(reaction._emoji.id !== "446705009707450368") { return };
 
-    logInfo("Message ID : " + reaction.message.id + " Baimun Count : " + reaction.count, "ReactionAdd");
+    logInfo("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count, "ReactionAdd");
     if(reaction.count == Bai) {
         reaction.message.react("446705009707450368");
 
-        logOk("Message ID : " + reaction.message.id + " Baimun Count : " + reaction.count + " (Triggered)", "ReactionAdd")
+        logOk("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count + " (Triggered)", "ReactionAdd")
     }
 });
 
