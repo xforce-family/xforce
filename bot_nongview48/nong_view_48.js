@@ -55,11 +55,77 @@ global.Random_Message = function(db_table, cb = null) {
     };
 
     let arr = global.lowsession.get(db_table).value();
-    let random = arr[_.random(arr.length-1)];
+    
+    let temp_arr = [...arr];
+    let random = temp_arr[_.random(temp_arr.length-1)];
 
     if(cb != null) {
         return cb(random);
     }
+}
+
+global.UnMute = function (data, cb = null) {
+    let user_id = data.id;
+    let user_isModerator = data.isModerator;
+    let user_data = global.xforce_guild.members.get(user_id);
+    
+    if(user_isModerator) {
+        let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้หัวแดง')
+        
+        if(Muted_Role) {
+            user_data.removeRole(global.moderator_mute_role);
+
+            async.each(data.channels, function(channel, callback) {
+                client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.moderator_mute_role + ">");
+
+                callback();
+            }, function () {
+                if(cb != null) {
+                    return cb();
+                }
+            });
+        }
+    } else {
+        let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้แดก')
+
+        if(Muted_Role) {
+            user_data.removeRole(global.default_mute_role);
+
+            async.each(data.channels, function(channel, callback) {
+                client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.default_mute_role + ">");
+
+                callback();
+            }, function () {
+                if(cb != null) {
+                    return cb();
+                }
+            });
+        }
+    }
+
+    db.get('muted').remove({ id: user_id }).write()
+}
+
+global.UnBlackHole = function (data, cb = null) {
+    let user_id = data.id;
+    let user_data = global.xforce_guild.members.get(user_id);
+    let Blackholed_Role = !!user_data.roles.find(role => role.name === 'Black Hole')
+    
+    if(Blackholed_Role) {
+        user_data.removeRole(global.blackhole_role);
+
+        async.each(data.channels, function(channel, callback) {
+            client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.blackhole_role + ">");
+
+            callback();
+        }, function () {
+            if(cb != null) {
+                return cb();
+            }
+        });
+    }
+
+    db.get('blackholed').remove({ id: user_id }).write();
 }
 
 /* Function */
@@ -95,7 +161,6 @@ function SendRandomNoPermissionMessage(message) {
     });
 }
 
-
 /* Event */
 client.on('ready', () => {
     logOk(`Logged in as ${client.user.tag}!`, 'Discord');
@@ -108,6 +173,10 @@ client.on('ready', () => {
         let now = moment();
 
         async.each(Muted_Data, function(data, callback) {
+            if(!data) {
+                return callback();
+            }
+
             let expired = moment(data.expired);
             let diff = now.diff(moment(expired));
 
@@ -115,41 +184,16 @@ client.on('ready', () => {
                 return callback();
             }
 
-            let user_id = data.id;
-            let user_isModerator = data.isModerator;
-            let user_data = global.xforce_guild.members.get(user_id);
-            
-            if(user_isModerator) {
-                let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้หัวแดง')
-                
-                if(Muted_Role) {
-                    user_data.removeRole(global.moderator_mute_role);
-
-                    async.each(data.channels, function(channel, cb) {
-                        client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.moderator_mute_role + ">");
-
-                        cb();
-                    });
-                }
-            } else {
-                let Muted_Role = !!user_data.roles.find(role => role.name === 'ใบ้แดก')
-
-                if(Muted_Role) {
-                    user_data.removeRole(global.default_mute_role);
-
-                    async.each(data.channels, function(channel, cb) {
-                        client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.default_mute_role + ">");
-
-                        cb();
-                    });
-                }
-            }
-
-            db.get('muted').remove({ id: user_id }).write()
-            callback();
+            global.UnMute(data, function() {
+                callback();
+            })
         });
 
         async.each(blackholed_data, function(data, callback) {
+            if(!data) {
+                return callback();
+            }
+
             let expired = moment(data.expired);
             let diff = now.diff(moment(expired));
 
@@ -157,22 +201,9 @@ client.on('ready', () => {
                 return callback();
             }
 
-            let user_id = data.id;
-            let user_data = global.xforce_guild.members.get(user_id);
-            let Blackholed_Role = !!user_data.roles.find(role => role.name === 'Black Hole')
-            
-            if(Blackholed_Role) {
-                user_data.removeRole(global.blackhole_role);
-
-                async.each(data.channels, function(channel, cb) {
-                    client.channels.get(channel).send("User <@" + user_id + "> หลุดพ้นจากการ " + "<@&" + global.blackhole_role + ">");
-
-                    cb();
-                });
-            }
-
-            db.get('blackholed').remove({ id: user_id }).write()
-            callback();
+            global.UnBlackHole(data, function() {
+                callback();
+            })
         });
 
     }, 1000)
