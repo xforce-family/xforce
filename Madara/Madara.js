@@ -21,7 +21,9 @@ client.on('messageReactionAdd', (reaction, user) => {
 
     logInfo("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count, "ReactionAdd");
     if(reaction.count == Bai) {
-        reaction.message.react("446705009707450368");
+        setImmediate(() => {
+            reaction.message.react("446705009707450368");
+        })
 
         logOk("Message ID : " + reaction.message.id + " | Baimun Count : " + reaction.count + " (Triggered)", "ReactionAdd")
     }
