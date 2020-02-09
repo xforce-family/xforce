@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const header = 'NongView';
+const header = 'Madara';
 
 const getCtx = (ctx) => { return (ctx !== null) ? header + ':' + ctx : header };
 
