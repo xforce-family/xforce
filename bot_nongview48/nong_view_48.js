@@ -236,6 +236,7 @@ client.on('message', message => {
 
     const args = message.content.slice(prefix.length).split(/ +/);
     args.shift()
+    if (!args[0]) { return; }
     const command = args[0].toLowerCase();
 
     if (!client.commands.has(command)) { return; }
